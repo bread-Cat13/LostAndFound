@@ -1,0 +1,136 @@
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { v4 as uuidv4 } from 'uuid';
+import multer from 'multer';
+
+@Injectable()
+export class AwsService {
+  s3Client: S3Client;
+  Bucket: string;
+
+  constructor(private configService: ConfigService) {
+    this.s3Client = new S3Client({
+      region: this.configService.get<string>('AWS_REGION'),
+      credentials: {
+        accessKeyId: this.configService.get<string>('AWS_S3_ACCESS_KEY'),
+        secretAccessKey: this.configService.get<string>(
+          'AWS_S3_SECRET_ACCESS_KEY',
+        ),
+      },
+    });
+
+    this.Bucket = this.configService.get<string>('AWS_S3_BUCKET_NAME');
+  }
+
+  // async imageUploadToS3(file: Express.Multer.File): Promise<string> {
+  //   //사전 에러 및 정보 확인
+  //   const upload = multer({ storage: multer.memoryStorage() });
+  //   console.log(
+  //     'File buffer length:',
+  //     file.buffer ? file.buffer.length : 'undefined',
+  //   );
+
+  //   // 파일 확장자 결정
+  //   let ext;
+  //   switch (file.mimetype) {
+  //     case 'image/jpeg':
+  //       ext = 'jpg';
+  //       break;
+  //     case 'image/png':
+  //       ext = 'png';
+  //       break;
+  //     case 'image/gif':
+  //       ext = 'gif';
+  //       break;
+  //     case 'image/bmp':
+  //       ext = 'bmp';
+  //       break;
+  //     default:
+  //       ext = 'jpg';
+  //       break;
+  //   }
+
+  //   // 파일 이름 생성 (기존 확장자 제거 후 새 확장자 추가)
+  //   const fileName = `${file.originalname.split('.')[0]}-${uuidv4()}.${ext}`;
+
+  //   const command = new PutObjectCommand({
+  //     Bucket: this.configService.get<string>('AWS_S3_BUCKET_NAME'),
+  //     Key: fileName,
+  //     Body: file.buffer,
+  //     ACL: 'public-read',
+  //     ContentType: file.mimetype,
+  //   });
+
+  //   try {
+  //     await this.s3Client.send(command);
+  //     return `https://${this.configService.get<string>('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${fileName}`;
+  //   } catch (error) {
+  //     console.error('Error uploading file to S3:', error);
+  //     throw new InternalServerErrorException('Failed to upload image to S3');
+  //   }
+  // }
+
+  async imageUploadToS3(file: Express.Multer.File): Promise<string> {
+    const fileExtension = file.originalname.split('.').pop();
+    const fileName = `${uuidv4()}.${fileExtension}`; // 고유한 파일 이름 생성
+
+    const command = new PutObjectCommand({
+      Bucket: this.configService.get<string>('AWS_S3_BUCKET_NAME'),
+      Key: fileName,
+      Body: file.buffer,
+      ContentType: file.mimetype, // ContentType 설정
+    });
+
+    try {
+      await this.s3Client.send(command);
+      return `https://${this.configService.get('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileName}`;
+    } catch (error) {
+      console.error('Error uploading file to S3:', error);
+      throw new InternalServerErrorException('Failed to upload image to S3');
+    }
+  }
+
+  // async uploadFile(
+  //   file: Express.Multer.File, // 업로드할 파일
+  // ): Promise<string> {
+  //   const fileExtension = file.originalname.split('.').pop();
+  //   const fileName = `${uuidv4()}.${fileExtension}`;
+
+  //   try {
+  //     const upload = new Upload({
+  //       client: this.s3Client,
+  //       params: {
+  //         Bucket: this.configService.get<string>('AWS_S3_BUCKET_NAME'),
+  //         Key: fileName,
+  //         Body: file.stream, // file.buffer 대신 file.stream 사용
+  //         ContentType: file.mimetype,
+  //       },
+  //     });
+
+  //     await upload.done();
+  //     return `https://${this.configService.get('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileName}`;
+  //   } catch (error) {
+  //     console.error('Error uploading file to S3:', error);
+  //     throw new InternalServerErrorException('Failed to upload image to S3');
+  //   }
+  // }
+
+  async deleteFile(fileName: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: this.configService.get<string>('AWS_S3_BUCKET_NAME'),
+      Key: fileName,
+    });
+
+    try {
+      await this.s3Client.send(command);
+    } catch (error) {
+      console.error('Error deleting file from S3:', error);
+      throw new InternalServerErrorException('Failed to delete image from S3');
+    }
+  }
+}

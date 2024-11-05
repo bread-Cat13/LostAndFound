@@ -1,0 +1,115 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
+import { PrismaDbService } from 'src/prisma-db/prisma-db.service';
+import { BoardsService } from 'src/boards/boards.service';
+import { Prisma } from '@prisma/client';
+
+@Injectable()
+export class PostsService {
+  constructor(
+    private readonly dbService: PrismaDbService,
+    private readonly boardsService: BoardsService,
+  ) {}
+
+  async create(boardId: string, createPostDto: CreatePostDto) {
+    const board = await this.boardsService.findOne(boardId);
+
+    // 트랜잭션 안에서 순차적으로 Post와 LostItem 생성
+    return await this.dbService.$transaction(async (dbService) => {
+      // 1. Post를 먼저 생성
+      const post = await dbService.post.create({
+        data: {
+          boardId, // Board와 연결
+          title: createPostDto.title,
+          content: createPostDto.content,
+          authorId: createPostDto.authorId,
+        },
+      });
+
+      // 2. 생성된 post.id를 사용해 LostItem 생성
+      const lostItem = await dbService.lostItem.create({
+        data: {
+          ...createPostDto.lostItem,
+          locationId: board.locationId, // Board와 연결된 Location 사용
+          postId: post.id, // 새로 생성한 Post의 ID 사용
+        },
+      });
+
+      return { post, lostItem };
+    });
+  }
+
+  async findAll(boardId?: string) {
+    if (boardId) {
+      return await this.dbService.post.findMany({
+        where: {
+          boardId,
+        },
+      });
+    }
+    return await this.dbService.post.findMany();
+  }
+
+  async findOne(id: string) {
+    const post = await this.dbService.post.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        lostItem: {
+          include: {
+            images: true,
+          },
+        },
+      },
+    });
+
+    if (!post) throw new NotFoundException(`Post with ID ${id} not found`);
+
+    return post;
+  }
+
+  // async update(id: string, updatePostDto: UpdatePostDto) {
+  //   try {
+  //     const updateData: Prisma.PostUpdateInput = {
+
+  //     }
+  //     return this.dbService.post.update({
+  //       where: { id },
+  //       data: updatePostDto, // ????? ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
+  //     });
+  //   } catch (error) {
+  //     throw new NotFoundException(`Post with ID ${id} not found`);
+  //   }
+  // }
+
+  //아 이게 뭔지 모르겠다..
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    try {
+      // Prisma의 PostUpdateInput 타입에 맞게 변환
+      const updateData: Prisma.PostUpdateInput = {
+        title: updatePostDto.title,
+        content: updatePostDto.content,
+        ...(updatePostDto.authorId && { authorId: updatePostDto.authorId }), // 선택적으로 authorId 포함
+      };
+
+      return this.dbService.post.update({
+        where: { id },
+        data: updateData,
+      });
+    } catch (error) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+  }
+
+  async remove(id: string) {
+    try {
+      return this.dbService.post.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new NotFoundException(`Post with ID ${id} not found`);
+    }
+  }
+}

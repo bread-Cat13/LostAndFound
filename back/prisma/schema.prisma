@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  phoneNumber String
+  posts      Post[]
+}
+
+model Board {
+  id         String   @id @default(uuid())
+  name       String   
+  locationId String   @unique
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  posts      Post[]
+}
+
+model Post {
+  id         String   @id @default(uuid())
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
+  boardId    String
+  authorId     String
+  board      Board    @relation(fields: [boardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user       User     @relation(fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lostItem   LostItem?
+}
+
+model LostItem {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  foundDate   DateTime
+  returnDate  DateTime?
+  status      Status
+  postId      String   @unique
+  locationId  String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  location    Location @relation(fields: [locationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  images      Image[]
+}
+
+
+model Location {
+  id     String @id @default(uuid())
+  name   String
+  address String
+  latitude Float
+  longitude Float
+  board  Board?
+  lostItem LostItem[]
+}
+
+model Image {
+  id         String @id @default(uuid())
+  url        String
+  lostItemId String
+  lostItem   LostItem @relation(fields: [lostItemId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+enum Status {
+  FOUND
+  CLAIMED
+}

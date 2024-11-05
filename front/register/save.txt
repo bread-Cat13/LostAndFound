@@ -1,0 +1,139 @@
+const postId = new URLSearchParams(window.location.search).get("postId");
+const boardId = new URLSearchParams(window.location.search).get("boardId");
+const locationId = new URLSearchParams(window.location.search).get(
+  "locationId"
+);
+
+async function loadExistingData() {
+  if (!postId) return;
+
+  const response = await fetch(`http://localhost:3000/api/posts/${postId}`);
+  const post = await response.json();
+
+  document.getElementById("title").value = post.title;
+  document.getElementById("content").value = post.content;
+  document.getElementById("author-id").value = post.authorId;
+  document.getElementById("lost-item-name").value = post.lostItem.name;
+  document.getElementById("description").value = post.lostItem.description;
+  document.getElementById("found-date").value = post.lostItem.foundDate;
+  document.getElementById("return-date").value = post.lostItem.returnDate || "";
+  document.getElementById("status").value = post.lostItem.status;
+}
+
+async function registerPost(event) {
+  event.preventDefault(); // 폼 기본 제출 동작 막기
+
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+  const authorId = document.getElementById("author-id").value;
+  const lostItem = {
+    name: document.getElementById("lost-item-name").value,
+    description: document.getElementById("description").value,
+    foundDate: document.getElementById("found-date").value,
+    returnDate: document.getElementById("return-date").value,
+    status: document.getElementById("status").value,
+  };
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("content", content);
+  formData.append("authorId", authorId);
+  formData.append("lostItem", JSON.stringify(lostItem));
+
+  const fileInput = document.getElementById("image-files");
+  Array.from(fileInput.files).forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const url = postId
+    ? `http://localhost:3000/api/posts/${postId}?boardId=${boardId}`
+    : `http://localhost:3000/api/posts?boardId=${boardId}`;
+
+  const method = postId ? "PUT" : "POST";
+
+  try {
+    const response = await fetch(url, {
+      method: method,
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert(
+        postId
+          ? "게시물이 성공적으로 수정되었습니다."
+          : "게시물이 성공적으로 등록되었습니다."
+      );
+      window.location.href = `../board/board.html?locationId=${locationId}`;
+    } else {
+      alert(
+        postId ? "게시물 수정에 실패했습니다." : "게시물 등록에 실패했습니다."
+      );
+      console.error("요청 실패:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("서버 오류로 인해 작업에 실패했습니다.");
+  }
+}
+
+// 기존 데이터 로드
+window.onload = loadExistingData;
+
+// 폼 제출 이벤트 핸들러 설정
+document.getElementById("post-form").addEventListener("submit", registerPost);
+
+// const boardId = new URLSearchParams(window.location.search).get("boardId");
+// const locationId = new URLSearchParams(window.location.search).get(
+//   "locationId"
+// );
+
+// async function registerPost(event) {
+//   event.preventDefault(); // 폼 기본 제출 동작 막기
+
+//   const title = document.getElementById("title").value;
+//   const content = document.getElementById("content").value;
+//   const authorId = document.getElementById("author-id").value;
+//   const lostItem = {
+//     name: document.getElementById("lost-item-name").value,
+//     description: document.getElementById("description").value,
+//     foundDate: document.getElementById("found-date").value,
+//     returnDate: document.getElementById("return-date").value,
+//     status: document.getElementById("status").value,
+//   };
+
+//   const formData = new FormData();
+//   formData.append("title", title);
+//   formData.append("content", content);
+//   formData.append("authorId", authorId);
+//   formData.append("lostItem", JSON.stringify(lostItem));
+
+//   // 이미지 파일 추가
+//   const fileInput = document.getElementById("image-files");
+//   Array.from(fileInput.files).forEach((file) => {
+//     formData.append("files", file);
+//   });
+
+//   try {
+//     const response = await fetch(
+//       `http://localhost:3000/api/posts?boardId=${boardId}`,
+//       {
+//         method: "POST",
+//         body: formData,
+//       }
+//     );
+
+//     if (response.ok) {
+//       alert("게시물이 성공적으로 등록되었습니다.");
+//       window.location.href = `../board/board.html?locationId=${locationId}`;
+//     } else {
+//       alert("게시물 등록에 실패했습니다.");
+//       console.error("등록 실패:", response.statusText);
+//     }
+//   } catch (error) {
+//     console.error("Error:", error);
+//     alert("서버 오류로 인해 게시물 등록에 실패했습니다.");
+//   }
+// }
+
+// // 폼 제출 이벤트 핸들러 설정
+// document.getElementById("post-form").addEventListener("submit", registerPost);

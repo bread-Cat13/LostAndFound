@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게시판</title>
+    <link rel="stylesheet" href="board.css" />
+  </head>
+  <body>
+    <header>
+      <h1 id="board-title">게시판</h1>
+      <div id="button-container">
+        <button id="map-button" onclick="goToMap()">지도 보기</button>
+        <button id="register-button" onclick="goToRegister()">등록하기</button>
+      </div>
+    </header>
+    <main id="post-list-container">
+      <p id="no-post-message" style="display: none">게시물이 없습니다.</p>
+      <div id="posts-container"></div>
+    </main>
+    <script src="../config/config.js"></script>
+    <script src="board.js"></script>
+  </body>
+</html>

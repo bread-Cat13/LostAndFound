@@ -1,0 +1,33 @@
+body {
+  background: #333;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+header {
+  background: #222;
+  padding: 15px;
+  font-size: 1.2rem;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+form {
+  background: #444;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+input,
+textarea,
+button {
+  display: block;
+  margin: 10px 0;
+  width: 100%;
+  padding: 10px;
+}
