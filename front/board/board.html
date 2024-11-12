@@ -9,10 +9,14 @@
   <body>
     <header>
       <h1 id="board-title">게시판</h1>
-      <div id="button-container">
-        <button id="map-button" onclick="goToMap()">지도 보기</button>
-        <button id="register-button" onclick="goToRegister()">등록하기</button>
-      </div>
+      <nav>
+        <a onclick="goHome()">홈으로</a>
+        <a onclick="goToMap()">지도 보기</a>
+        <a onclick="goToRegister()">등록하기</a>
+      </nav>
+      <!-- <button id="map-button" onclick="goToMap()">지도 보기</button>
+        <button id="register-button" onclick="goToRegister()">등록하기</button> -->
+      <div id="user-greeting" style="display: none"></div>
     </header>
     <main id="post-list-container">
       <p id="no-post-message" style="display: none">게시물이 없습니다.</p>

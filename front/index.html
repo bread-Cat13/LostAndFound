@@ -9,9 +9,8 @@
   <body>
     <header>
       <h1>분실물 관리 시스템</h1>
-      <nav>
-        <a href="#">홈</a>
-        <a href="#">로그인</a>
+      <nav id="user-nav">
+        <!-- 사용자 정보가 여기에 동적으로 삽입됩니다 -->
       </nav>
     </header>
 
@@ -31,7 +30,11 @@
           <p>분실물의 습득 위치를 지도에서 한 눈에 파악할 수 있습니다.</p>
         </div>
 
-        <div class="option-card" onclick="window.location.href='search.html'">
+        <div
+          id="search-tab"
+          class="option-card"
+          onclick="window.location.href='#'"
+        >
           <img src="./imgs/icon-search.png" alt="분실물 검색 아이콘" />
           <h3>분실물 검색</h3>
           <p>분실물의 특징, 습득 장소, 습득 날짜 등으로 검색할 수 있습니다.</p>
@@ -42,5 +45,6 @@
     <footer>
       <p>© 2024 분실물 관리 시스템. All rights reserved.</p>
     </footer>
+    <script src="scripts.js"></script>
   </body>
 </html>

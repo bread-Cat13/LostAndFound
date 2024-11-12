@@ -15,10 +15,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
+  // @Post()
+  // create(@Body() createUserDto: CreateUserDto) {
+  //   return this.userService.create(createUserDto);
+  // }
 
   @Get()
   findAll() {
@@ -30,6 +30,12 @@ export class UsersController {
     return this.userService.findOne(id);
   }
 
+  @Get('/name/:id')
+  async getUsernameById(@Param('id') id: string) {
+    const username = await this.userService.getUsernameById(id);
+    // console.log('username from userController=', username);
+    return { username: username };
+  }
   @Post('/find')
   findOneByEmail(@Body() email: string) {
     return this.userService.findByEmail(email);

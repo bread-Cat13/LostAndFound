@@ -29,14 +29,14 @@ export class AwsService {
     const fileName = `${uuidv4()}_${file.originalname}`;
     const uploadParams = {
       Bucket: this.configService.get('AWS_S3_BUCKET_NAME'),
-      Key: fileName,
+      Key: `itemImgs/${fileName}`,
       Body: file.buffer,
       ContentType: file.mimetype,
     };
 
     try {
       await this.s3Client.send(new PutObjectCommand(uploadParams));
-      return `https://${this.configService.get('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/${fileName}`;
+      return `https://${this.configService.get('AWS_S3_BUCKET_NAME')}.s3.${this.configService.get('AWS_REGION')}.amazonaws.com/itemImgs/${fileName}`;
     } catch (error) {
       console.error('Error uploading file to S3:', error);
       throw new InternalServerErrorException('Failed to upload image to S3');

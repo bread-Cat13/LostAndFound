@@ -1,94 +1,60 @@
-body,
-html {
-  margin: 0;
+body {
+  background-color: #1f1f1f;
+  color: white;
   font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background-color: #f3f4f6;
 }
 
 header {
-  width: 100%;
-  background-color: #333;
-  color: #fff;
-  padding: 10px;
-  text-align: center;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  background-color: #282828;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+h1 {
+  margin: 0;
 }
 
 .nav-button {
   background-color: #4caf50;
   color: white;
   border: none;
-  padding: 8px 15px;
-  margin-top: 10px;
-  border-radius: 5px;
+  padding: 10px 15px;
   cursor: pointer;
+  border-radius: 5px;
+}
+
+.nav-button:hover {
+  background-color: #45a049;
 }
 
 main {
-  width: 80%;
-  max-width: 600px;
-  margin-top: 20px;
   padding: 20px;
-  border: 1px solid #ddd;
+}
+
+#post-container {
+  padding: 20px;
+  background-color: #333;
   border-radius: 10px;
-  background-color: #ffffff;
 }
 
-#post-container h2 {
-  margin-top: 0;
-  color: #333;
-}
-
-#post-container p {
-  margin: 5px 0;
-  color: #555;
-}
-
-#image-container {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.lost-item-image {
-  width: 100px;
-  height: auto;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-}
-
-#button-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+.button-container {
+  margin-top: 20px;
 }
 
 .action-button,
 .delete-button {
-  padding: 10px 15px;
-  font-size: 16px;
+  background-color: #2196f3;
+  color: white;
   border: none;
-  border-radius: 5px;
+  padding: 10px 15px;
   cursor: pointer;
-}
-
-.action-button {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.delete-button {
-  background-color: #ff4d4d;
-  color: #fff;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 
 .action-button:hover,
 .delete-button:hover {
-  opacity: 0.8;
+  background-color: #1e88e5;
 }

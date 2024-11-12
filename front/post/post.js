@@ -4,6 +4,36 @@ const locationId = new URLSearchParams(window.location.search).get(
 );
 const serverIPandPort = `${CONFIG.SERVER_URL}`;
 
+async function fetchUserId() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  console.log("user = ", user);
+  const token = user ? user.accessToken : null;
+
+  console.log("token = ", token);
+
+  if (!token) {
+    throw new Error("No access token found.");
+  }
+
+  const response = await fetch(`${serverIPandPort}/api/auth/user-id2`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    console.log("error!");
+    throw new Error("Failed to fetch user ID");
+  }
+
+  // JSON 데이터를 파싱해서 userData에 저장
+  const userData = await response.json();
+  return userData.id; // ID 반환
+}
+
 async function loadPostData() {
   if (!postId) {
     console.error("postId가 URL에 없습니다.");
@@ -16,26 +46,50 @@ async function loadPostData() {
         "Content-Type": "application/json",
       },
     });
-    // const response = await fetch(`${serverIPandPort}/api/posts/${postId}`);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch post data: ${response.statusText}`);
     }
     const post = await response.json();
+    const authorId = post.authorId;
+    const currentUserId = await fetchUserId();
+
+    console.log(`authorId=${authorId}, curUserId=${currentUserId}`);
+
+    const userNameRes = await fetch(
+      `${serverIPandPort}/api/users/name/${authorId}`
+    );
+    const userData = await userNameRes.json();
+
+    console.log("post from post.js =", post);
 
     // 게시물 데이터 렌더링
     document.getElementById("post-title").textContent = post.title;
     document.getElementById("post-content").textContent = post.content;
-    document.getElementById(
-      "post-author"
-    ).textContent = `작성자 ID: ${post.authorId}`;
+    document.getElementById("author-username").textContent = userData.username;
+
     document.getElementById(
       "post-status"
     ).textContent = `상태: ${post.lostItem.status}`;
+
     document.getElementById(
       "post-foundDate"
-    ).textContent = `분실 날짜: ${post.lostItem.foundDate}`;
+    ).textContent = `분실 날짜: ${new Date(
+      post.lostItem.foundDate
+    ).toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })}`;
+
     document.getElementById("post-returnDate").textContent = `반환 날짜: ${
-      post.lostItem.returnDate || "N/A"
+      post.lostItem.returnDate
+        ? new Date(post.lostItem.returnDate).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          })
+        : "반환 전"
     }`;
 
     // 이미지 표시
@@ -51,6 +105,14 @@ async function loadPostData() {
       });
     } else {
       imageContainer.textContent = "이미지가 없습니다.";
+    }
+
+    // 작성자와 현재 로그인한 사용자 비교 후 버튼 표시
+    const buttonContainer = document.getElementById("button-container");
+    if (authorId === currentUserId) {
+      buttonContainer.style.display = "flex"; // 버튼 표시
+    } else {
+      buttonContainer.style.display = "none"; // 버튼 숨기기
     }
   } catch (error) {
     console.error("Error loading post data:", error);
@@ -87,9 +149,9 @@ async function deletePost() {
 }
 
 // 게시판으로 돌아가는 함수
-function goBacktoBoard() {
+function goBack() {
   window.location.href = `../board/board.html?locationId=${locationId}`;
 }
 
-document.getElementById("back-board").addEventListener("click", goBacktoBoard);
+document.getElementById("back-board").addEventListener("click", goBack);
 window.onload = loadPostData;

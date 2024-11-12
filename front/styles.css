@@ -8,7 +8,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
 }
-
+/* 
 header {
   display: flex;
   justify-content: space-between;
@@ -20,17 +20,32 @@ header {
 header h1 {
   font-size: 1.5em;
   color: #fff;
+} */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e1e1e; /* 헤더 배경 색상 */
+  padding: 10px;
+}
+
+header h1 {
+  color: white;
 }
 
 header nav a {
-  color: #ccc;
+  color: white; /* 기본 텍스트 색상 */
   text-decoration: none;
-  margin-left: 15px;
-  font-size: 1em;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header nav a:hover {
-  color: #fff;
+  background-color: #444; /* 마우스를 올렸을 때 어두운 회색 */
+  color: #ffd700; /* 마우스를 올렸을 때 노란색 */
 }
 
 /* 메인 콘텐츠 스타일 */

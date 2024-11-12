@@ -13,8 +13,6 @@ async function loadExistingData() {
 
   document.getElementById("title").value = post.title;
   document.getElementById("content").value = post.content;
-  document.getElementById("author-id").value = post.authorId;
-  document.getElementById("author-id").readOnly = true;
 
   if (post.lostItem) {
     document.getElementById("lost-item-name").value = post.lostItem.name;
@@ -34,8 +32,6 @@ async function loadExistingData() {
       const img = document.createElement("img");
       img.src = image.url;
       img.alt = "Uploaded image";
-      img.style.width = "100px";
-      img.style.marginRight = "10px";
       imageContainer.appendChild(img);
     });
   }
@@ -60,15 +56,55 @@ async function uploadImage(file) {
   return data.imageUrl;
 }
 
+async function fetchUserId() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  console.log("user = ", user);
+  const token = user ? user.accessToken : null;
+
+  console.log("token = ", token);
+
+  if (!token) {
+    throw new Error("No access token found.");
+  }
+
+  const response = await fetch(`${serverIPandPort}/api/auth/user-id2`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    console.log("error!");
+    throw new Error("Failed to fetch user ID");
+  }
+
+  // JSON 데이터를 파싱해서 userData에 저장
+  const userData = await response.json();
+  return userData.id; // ID 반환
+}
+
 async function submitPost(event) {
   event.preventDefault();
 
-  // 기본 데이터 수집
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
-  const authorId = document.getElementById("author-id").value;
   const status = document.getElementById("status").value;
   const returnDate = document.getElementById("return-date").value;
+
+  console.log("Here is submitPost method");
+
+  // 사용자 ID 가져오기
+  let authorId;
+  try {
+    authorId = await fetchUserId(); // ID 가져오기
+  } catch (error) {
+    alert("사용자 정보를 가져오는 데 실패했습니다.");
+    console.error(error);
+    return; // 함수 종료
+  }
 
   const lostItem = {
     name: document.getElementById("lost-item-name").value,
@@ -78,18 +114,13 @@ async function submitPost(event) {
     status: status,
   };
 
-  // FormData에 데이터 추가
   const formData = new FormData();
   formData.append("title", title);
   formData.append("content", content);
-  formData.append("authorId", authorId);
+  formData.append("authorId", authorId); // 가져온 ID 사용
   formData.append("lostItem", JSON.stringify(lostItem));
 
-  // 파일을 FormData에 추가
   const fileInput = document.getElementById("image-files");
-  if (fileInput.files.length === 0) {
-    console.warn("No files selected.");
-  }
   Array.from(fileInput.files).forEach((file) => {
     formData.append("files", file);
   });
@@ -125,77 +156,6 @@ async function submitPost(event) {
     alert("서버 오류로 인해 작업에 실패했습니다.");
   }
 }
-
-// async function submitPost(event) {
-//   event.preventDefault();
-
-//   const title = document.getElementById("title").value;
-//   const content = document.getElementById("content").value;
-//   const authorId = document.getElementById("author-id").value;
-//   const status = document.getElementById("status").value;
-//   const returnDate = document.getElementById("return-date").value;
-
-//   if (status === "CLAIMED" && !returnDate) {
-//     alert("상태가 'CLAIMED'일 때는 반환 날짜를 입력해야 합니다.");
-//     return;
-//   }
-
-//   const lostItem = {
-//     name: document.getElementById("lost-item-name").value,
-//     description: document.getElementById("description").value,
-//     foundDate: document.getElementById("found-date").value,
-//     returnDate: returnDate,
-//     status: status,
-//   };
-
-//   let imageUrls = [];
-//   const fileInput = document.getElementById("image-files");
-//   if (fileInput.files.length > 0) {
-//     const uploadPromises = Array.from(fileInput.files).map(uploadImage);
-//     imageUrls = await Promise.all(uploadPromises);
-//   }
-
-//   const postData = {
-//     title,
-//     content,
-//     authorId,
-//     lostItem,
-//     images: imageUrls,
-//   };
-
-//   const url = postId
-//     ? `${serverIPandPort}/api/posts/${postId}?boardId=${boardId}`
-//     : `${serverIPandPort}/api/posts?boardId=${boardId}`;
-//   const method = postId ? "PATCH" : "POST";
-
-//   try {
-//     console.log(`create front에서 알립니다. boardId는 ${boardId}`);
-//     const response = await fetch(url, {
-//       method: method,
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(postData),
-//     });
-
-//     if (response.ok) {
-//       alert(
-//         postId
-//           ? "게시물이 성공적으로 수정되었습니다."
-//           : "게시물이 성공적으로 등록되었습니다."
-//       );
-//       window.location.href = postId
-//         ? `../post/post.html?postId=${postId}&locationId=${locationId}`
-//         : `../board/board.html?locationId=${locationId}`;
-//     } else {
-//       alert(
-//         postId ? "게시물 수정에 실패했습니다." : "게시물 등록에 실패했습니다."
-//       );
-//       console.error("요청 실패:", response.statusText);
-//     }
-//   } catch (error) {
-//     console.error("Error:", error);
-//     alert("서버 오류로 인해 작업에 실패했습니다.");
-//   }
-// }
 
 window.onload = loadExistingData;
 document.getElementById("post-form").addEventListener("submit", submitPost);

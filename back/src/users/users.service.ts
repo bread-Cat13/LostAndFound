@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaDbService } from 'src/prisma-db/prisma-db.service';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -18,6 +19,11 @@ export class UsersService {
     return await this.dbService.user.findMany();
   }
 
+  async getUsernameById(id: string) {
+    const user = await this.findOne(id);
+    return user.name;
+  }
+
   async findOne(id: string) {
     const user = await this.dbService.user.findUnique({
       where: {
@@ -30,15 +36,23 @@ export class UsersService {
     return user;
   }
 
+  async findByName(name: string) {
+    const user = await this.dbService.user.findUnique({
+      where: {
+        name: name, // 여기서 name을 직접 사용
+      },
+    });
+
+    return user;
+  }
+
   async findByEmail(email: string) {
     const user = await this.dbService.user.findUnique({
       where: {
         email,
       },
     });
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
-    }
+
     return user;
   }
 

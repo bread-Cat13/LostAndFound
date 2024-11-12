@@ -23,7 +23,7 @@ export class ImagesService {
     console.log('File buffer length:', file.buffer.length);
 
     const imageUrl = await this.s3Service.imageUploadToS3(file);
-    console.log(imageUrl);
+    console.log('ImageUrl from imgsService=', imageUrl);
 
     // 데이터베이스에 이미지 URL과 연결된 LostItem ID 저장
     await this.dbService.image.create({

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로그인</title>
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1 style="font-size: 2.5em">로그인</h1>
+        <form id="login-form">
+          <!-- 로그인 폼 추가 -->
+          <label
+            for="email"
+            style="font-size: 1.1em; font-weight: bold; margin-bottom: -5px"
+            >이메일</label
+          >
+          <input
+            type="text"
+            style="margin-bottom: 10px"
+            id="email"
+            placeholder="이메일 입력"
+            required
+          />
+
+          <label
+            for="password"
+            style="
+              font-size: 1.1em;
+              font-weight: bold;
+              margin-bottom: -5px;
+              margin-top: 10px;
+            "
+            >비밀번호</label
+          >
+          <input
+            type="password"
+            id="password"
+            placeholder="비밀번호 입력"
+            style="margin-bottom: 10px"
+            required
+          />
+
+          <button type="submit" id="button" style="margin-top: 20px">
+            로그인
+          </button>
+          <!-- 버튼을 제출 타입으로 설정 -->
+        </form>
+        <div class="link" style="font-size: 0.85em; color: #ede1e1cd">
+          계정이 없으신가요?
+          <a href="../signup/signup.html" style="color: #4caf50">회원가입</a>
+        </div>
+        <div class="findAccount" style="font-size: 0.85em; color: #ede1e1cd">
+          비밀번호를 잊으셨나요?
+          <a href="#" style="color: #4caf50">비밀번호 찾기</a>
+        </div>
+        <div class="goHome" style="font-size: 0.85em">
+          <a href="../../index.html" style="color: #4caf50">홈으로</a>
+        </div>
+      </div>
+    </div>
+    <script src="../../config/config.js"></script>
+    <script src="login.js"></script>
+  </body>
+</html>

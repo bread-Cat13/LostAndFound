@@ -33,7 +33,11 @@ export class LocationsService {
       include: {
         board: {
           include: {
-            posts: true,
+            posts: {
+              include: {
+                lostItem: true,
+              },
+            },
           },
         },
       },

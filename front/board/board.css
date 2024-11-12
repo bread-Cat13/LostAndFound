@@ -1,57 +1,42 @@
-body,
-html {
-  margin: 0;
-  padding: 0;
+body {
+  background-color: #121212;
+  color: #ffffff;
   font-family: Arial, sans-serif;
-  height: 100%;
 }
 
 header {
-  background-color: #333;
-  color: #fff;
-  padding: 15px;
-  text-align: center;
+  background-color: #1e1e1e;
+  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-header h1 {
-  margin: 0;
+header nav a {
+  color: white; /* 기본 텍스트 색상 */
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-#button-container {
-  display: flex;
-  gap: 10px; /* 버튼 사이 간격 조정 */
-  justify-content: flex-end; /* 오른쪽 정렬 */
-}
-
-#map-button,
-#register-button {
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-}
-
-#post-list-container {
-  padding: 20px;
+header nav a:hover {
+  background-color: #444; /* 마우스를 올렸을 때 어두운 회색 */
+  color: #ffd700; /* 마우스를 올렸을 때 노란색 */
 }
 
 .post-item {
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-  cursor: pointer;
+  background-color: #1e1e1e;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 8px;
 }
 
-.post-item:hover {
-  background-color: #f9f9f9;
-}
-
-#no-post-message {
-  text-align: center;
-  color: #666;
-  font-size: 18px;
-  margin-top: 20px;
+button {
+  background-color: #444e61;
+  color: white;
+  width: 100px;
+  height: 50px;
+  margin-left: 10px;
 }

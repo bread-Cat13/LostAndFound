@@ -9,7 +9,9 @@
   <body>
     <header>
       <h1>게시물 등록/수정</h1>
-      <button onclick="history.back()">뒤로가기</button>
+      <nav>
+        <a href="#" onclick="history.back()">게시판으로</a>
+      </nav>
     </header>
     <main>
       <form id="post-form">
@@ -19,9 +21,6 @@
         <label for="content">내용</label>
         <textarea id="content" name="content" required></textarea>
 
-        <label for="author-id">작성자 ID</label>
-        <input type="text" id="author-id" name="author-id" required />
-
         <h3>분실물 정보</h3>
         <label for="lost-item-name">분실물 이름</label>
         <input type="text" id="lost-item-name" name="lost-item-name" />
@@ -30,7 +29,7 @@
         <textarea id="description" name="description"></textarea>
 
         <label for="found-date">습득 날짜</label>
-        <input type="date" id="found-date" name="found-date" />
+        <input type="date" id="found-date" name="found-date" required />
 
         <label for="return-date">반환 날짜</label>
         <input type="date" id="return-date" name="return-date" />
